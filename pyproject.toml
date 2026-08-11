@@ -1,0 +1,24 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "screenmarker"
+version = "1.0.0"
+description = "Marcador para rayar la pantalla sobre cualquier ventana (Linux y Windows)"
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = ["PySide6>=6.5,<7", "pynput>=1.7,<2"]
+
+[project.scripts]
+screenmarker = "screenmarker.app:main"
+
+[tool.setuptools]
+packages = ["screenmarker"]
+
+[tool.ruff]
+line-length = 96
+target-version = "py310"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B"]
