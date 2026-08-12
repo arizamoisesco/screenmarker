@@ -19,6 +19,10 @@ BOARD_COLORS = {
     "light": QColor(248, 248, 248, 240),
 }
 LASER_LIFETIME = 0.8  # segundos que dura el rastro del puntero láser
+# Fondo prácticamente invisible: Windows no repinta de forma fiable una ventana
+# por capas cuyo contenido es 100 % transparente, así que los trazos solo se veían
+# con la pizarra encendida. Con alfa 1 la ventana siempre tiene contenido.
+CANVAS_FILL = QColor(0, 0, 0, 1)
 
 
 def virtual_geometry() -> QRect:
@@ -185,7 +189,9 @@ class Overlay(QWidget):
         painter = QPainter(self)
         painter.setRenderHint(QPainter.Antialiasing, True)
         painter.setRenderHint(QPainter.TextAntialiasing, True)
-        if self.board_mode != "off":
+        if self.board_mode == "off":
+            painter.fillRect(self.rect(), CANVAS_FILL)
+        else:
             painter.fillRect(self.rect(), BOARD_COLORS[self.board_mode])
         self.render_annotations(painter)
         self._draw_laser(painter)
