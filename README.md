@@ -22,7 +22,25 @@ Funciona en **Linux** y **Windows** con el mismo código (Python + PySide6/Qt).
   al portapapeles).
 - Barra flotante arrastrable y contraíble, y atajos globales de teclado.
 
-## Instalación
+## Descargar el ejecutable (sin instalar Python)
+
+En la página de [Releases](https://github.com/arizamoisesco/screenmarker/releases) hay un
+archivo único listo para usar:
+
+- **Windows**: `screenmarker-windows-x64.exe` — doble clic para abrirlo. La primera vez
+  SmartScreen puede avisar de que el editor es desconocido: *Más información → Ejecutar
+  de todas formas*.
+- **Linux**: `screenmarker-linux-x86_64` — dale permiso de ejecución y lánzalo:
+
+  ```bash
+  chmod +x screenmarker-linux-x86_64
+  ./screenmarker-linux-x86_64
+  ```
+
+Los ejecutables los compila GitHub Actions (`.github/workflows/release.yml`) con
+PyInstaller cada vez que se publica una etiqueta `vX.Y.Z`.
+
+## Instalación desde el código
 
 Requiere Python 3.10 o superior.
 
