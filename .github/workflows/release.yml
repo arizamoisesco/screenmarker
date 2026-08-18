@@ -22,15 +22,21 @@ jobs:
       # extracción Qt no encuentra sus plugins y la app falla al iniciar.
       - run: >
           pyinstaller --noconfirm --clean --onedir --windowed
-          --name screenmarker --collect-submodules pynput --paths .
+          --name screenmarker --collect-submodules pynput
+          --collect-submodules screenmarker --paths .
           --version-file installer/windows_version.txt installer/entry.py
       - run: Compress-Archive -Path dist/screenmarker/* -DestinationPath dist/screenmarker-windows-x64.zip
       # Versión con consola: si algo falla, el error queda a la vista.
       - run: >
           pyinstaller --noconfirm --clean --onedir --console
-          --name screenmarker-debug --collect-submodules pynput --paths .
+          --name screenmarker-debug --collect-submodules pynput
+          --collect-submodules screenmarker --paths .
           --version-file installer/windows_version.txt installer/entry.py
       - run: Compress-Archive -Path dist/screenmarker-debug/* -DestinationPath dist/screenmarker-windows-x64-debug.zip
+      # `--help` sale de argparse antes de crear la ventana: si el paquete
+      # screenmarker no quedó dentro del ejecutable, esto falla aquí y no en el
+      # PC de quien lo descarga.
+      - run: ./dist/screenmarker-debug/screenmarker-debug.exe --help
       - uses: actions/upload-artifact@v4
         with:
           name: screenmarker-windows-x64
@@ -57,8 +63,10 @@ jobs:
       - run: pip install -r requirements.txt pyinstaller==6.22.0
       - run: >
           pyinstaller --noconfirm --clean --onefile --windowed
-          --name screenmarker --collect-submodules pynput --paths . installer/entry.py
+          --name screenmarker --collect-submodules pynput
+          --collect-submodules screenmarker --paths . installer/entry.py
       - run: mv dist/screenmarker dist/screenmarker-linux-x86_64
+      - run: ./dist/screenmarker-linux-x86_64 --help
       - uses: actions/upload-artifact@v4
         with:
           name: screenmarker-linux-x86_64
