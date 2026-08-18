@@ -24,18 +24,39 @@ Funciona en **Linux** y **Windows** con el mismo código (Python + PySide6/Qt).
 
 ## Descargar el ejecutable (sin instalar Python)
 
-En la página de [Releases](https://github.com/arizamoisesco/screenmarker/releases) hay un
-archivo único listo para usar:
+En la página de [Releases](https://github.com/arizamoisesco/screenmarker/releases) hay
+descargas listas para usar:
 
-- **Windows**: `screenmarker-windows-x64.exe` — doble clic para abrirlo. La primera vez
-  SmartScreen puede avisar de que el editor es desconocido: *Más información → Ejecutar
-  de todas formas*.
+- **Windows**: `screenmarker-windows-x64.zip` — descomprímelo (clic derecho →
+  *Extraer todo*) y abre `screenmarker.exe` desde la carpeta extraída. No ejecutes la
+  aplicación desde dentro del ZIP: Windows la abre en una carpeta temporal y Qt no
+  encuentra sus componentes.
 - **Linux**: `screenmarker-linux-x86_64` — dale permiso de ejecución y lánzalo:
 
   ```bash
   chmod +x screenmarker-linux-x86_64
   ./screenmarker-linux-x86_64
   ```
+
+### Aviso de SmartScreen en Windows
+
+El ejecutable no está firmado con un certificado de código (es de pago y se emite a
+nombre de una persona u organización), así que Windows muestra *"Windows protegió tu
+PC"* la primera vez. Para abrirlo: **Más información → Ejecutar de todas formas**.
+
+Si el antivirus lo bloquea o lo borra, añade la carpeta a las exclusiones de Windows
+Defender (*Seguridad de Windows → Protección antivirus → Exclusiones*). Los ejecutables
+se compilan en GitHub Actions a partir del código de este repositorio, así que puedes
+reconstruirlos tú mismo con PyInstaller si prefieres no confiar en el binario.
+
+### Si el ejecutable no arranca
+
+1. Descarga `screenmarker-windows-x64-debug.zip`, descomprímelo y ejecuta
+   `screenmarker-debug.exe`: es la misma aplicación pero con consola, y el error queda
+   escrito en pantalla.
+2. Cualquier fallo de arranque se guarda también en
+   `%LOCALAPPDATA%\ScreenMarker\screenmarker.log` (Linux:
+   `~/.local/state/screenmarker/screenmarker.log`).
 
 Los ejecutables los compila GitHub Actions (`.github/workflows/release.yml`) con
 PyInstaller cada vez que se publica una etiqueta `vX.Y.Z`.
