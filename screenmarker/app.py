@@ -14,6 +14,7 @@ from .hotkeys import GlobalHotkeys
 from .model import Tool
 from .overlay import Overlay
 from .toolbar import PALETTE, TOOL_ORDER, Toolbar
+from .tray import Tray
 
 APP_NAME = "ScreenMarker"
 
@@ -34,9 +35,16 @@ class ScreenMarker:
         self.screenshot_dir = screenshot_dir
         self.overlay = Overlay()
         self.toolbar = Toolbar()
+        self.tray = Tray()
         self.last_screenshot: Path | None = None
+        self._tray_hint_shown = False
+
+        self.hotkeys = GlobalHotkeys()
+        self.hotkeys.activated.connect(self._on_global_hotkey)
+        self.hotkeys_enabled = self.hotkeys.start()
 
         self._connect_toolbar()
+        self._connect_tray()
         self._register_shortcuts()
         self.overlay.state_changed.connect(self._sync)
 
@@ -48,17 +56,15 @@ class ScreenMarker:
         self._keep_on_top.timeout.connect(self._raise_windows)
         self._keep_on_top.start()
 
-        self.hotkeys = GlobalHotkeys()
-        self.hotkeys.activated.connect(self._on_global_hotkey)
-        self.hotkeys_enabled = self.hotkeys.start()
-
     # ------------------------------------------------------------ arranque
     def show(self) -> None:
         self.overlay.show()
         self.overlay.raise_()
         self.overlay.activateWindow()
+        self.tray.show()
         self.toolbar.show()
         self.toolbar.raise_()
+        self.tray.sync(True)
         screen = QGuiApplication.primaryScreen().availableGeometry()
         self.toolbar.move(
             screen.right() - self.toolbar.width() - 24, screen.top() + 60
@@ -84,7 +90,17 @@ class ScreenMarker:
         bar.board_requested.connect(overlay.cycle_board)
         bar.screenshot_requested.connect(self.save_screenshot)
         bar.passthrough_requested.connect(overlay.toggle_passthrough)
+        bar.hide_requested.connect(self.hide_toolbar)
         bar.quit_requested.connect(self.quit)
+
+    def _connect_tray(self) -> None:
+        tray, overlay = self.tray, self.overlay
+        tray.toggle_toolbar_requested.connect(self.toggle_toolbar)
+        tray.passthrough_requested.connect(overlay.toggle_passthrough)
+        tray.board_requested.connect(overlay.cycle_board)
+        tray.clear_requested.connect(overlay.clear)
+        tray.screenshot_requested.connect(self.save_screenshot)
+        tray.quit_requested.connect(self.quit)
 
     def _register_shortcuts(self) -> None:
         bindings: list[tuple[str, object]] = [
@@ -97,6 +113,7 @@ class ScreenMarker:
             ("Ctrl+Alt+D", self.overlay.toggle_passthrough),
             ("Ctrl+Alt+B", self.overlay.cycle_board),
             ("Ctrl+Alt+S", self.save_screenshot),
+            ("Ctrl+Alt+M", self.toggle_toolbar),
             ("Ctrl+Alt+Q", self.quit),
             ("B", self.overlay.cycle_board),
             ("F", self._toggle_fill),
@@ -112,6 +129,10 @@ class ScreenMarker:
         self._shortcuts = []
         for host in (self.overlay, self.toolbar):
             for sequence, handler in bindings:
+                # Con los atajos globales activos, repetir el atajo en Qt lo
+                # dispara dos veces cuando ScreenMarker tiene el foco.
+                if self.hotkeys_enabled and sequence.startswith("Ctrl+Alt+"):
+                    continue
                 shortcut = QShortcut(QKeySequence(sequence), host)
                 shortcut.setContext(Qt.ApplicationShortcut)
                 shortcut.activated.connect(handler)
@@ -126,6 +147,37 @@ class ScreenMarker:
         for index, name in enumerate(PALETTE):
             if QColor(name) == color:
                 self.toolbar.color_group.button(index).setChecked(True)
+
+    def hide_toolbar(self) -> None:
+        """Oculta la barra por completo; queda accesible desde la bandeja."""
+        if not self.tray.isVisible() and not self.hotkeys_enabled:
+            # Sin bandeja ni atajos globales no habría forma de recuperarla.
+            self.toolbar.status.setText(
+                "No hay bandeja del sistema disponible: la barra no puede ocultarse."
+            )
+            return
+        self.toolbar.hide()
+        self.tray.sync(False)
+        if not self._tray_hint_shown and self.tray.isVisible():
+            self._tray_hint_shown = True
+            self.tray.showMessage(
+                "ScreenMarker sigue activo",
+                "La barra está oculta. Usa el icono de la bandeja o Ctrl+Alt+M "
+                "para volver a mostrarla.",
+                self.tray.icon(),
+                4000,
+            )
+
+    def show_toolbar(self) -> None:
+        self.toolbar.show()
+        self.toolbar.raise_()
+        self.tray.sync(True)
+
+    def toggle_toolbar(self) -> None:
+        if self.toolbar.isVisible():
+            self.hide_toolbar()
+        else:
+            self.show_toolbar()
 
     def _toggle_fill(self) -> None:
         self.toolbar.fill_button.toggle()
@@ -164,6 +216,7 @@ class ScreenMarker:
             "redo": self.overlay.redo,
             "board": self.overlay.cycle_board,
             "screenshot": self.save_screenshot,
+            "toolbar": self.toggle_toolbar,
             "quit": self.quit,
         }
         handler = handlers.get(action)
@@ -173,6 +226,7 @@ class ScreenMarker:
     def quit(self) -> None:
         self._keep_on_top.stop()
         self.hotkeys.stop()
+        self.tray.hide()
         self.overlay.close()
         self.toolbar.close()
         QApplication.quit()

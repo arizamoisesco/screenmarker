@@ -15,6 +15,7 @@ DEFAULT_BINDINGS = {
     "<ctrl>+<alt>+y": "redo",
     "<ctrl>+<alt>+s": "screenshot",
     "<ctrl>+<alt>+b": "board",
+    "<ctrl>+<alt>+m": "toolbar",
     "<ctrl>+<alt>+q": "quit",
 }
 

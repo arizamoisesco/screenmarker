@@ -13,6 +13,7 @@ from PySide6.QtWidgets import (
     QGridLayout,
     QHBoxLayout,
     QLabel,
+    QLayout,
     QPushButton,
     QSlider,
     QVBoxLayout,
@@ -91,6 +92,7 @@ class Toolbar(QWidget):
     board_requested = Signal()
     screenshot_requested = Signal()
     passthrough_requested = Signal()
+    hide_requested = Signal()
     quit_requested = Signal()
 
     def __init__(self) -> None:
@@ -106,13 +108,14 @@ class Toolbar(QWidget):
         self.setAttribute(Qt.WA_TranslucentBackground, True)
         self.setStyleSheet(STYLE)
         self._drag_offset: QPoint | None = None
-        self._collapsed = False
         self._build()
 
     # ------------------------------------------------------------ interfaz
     def _build(self) -> None:
         outer = QVBoxLayout(self)
         outer.setContentsMargins(0, 0, 0, 0)
+        # Sin esto la ventana conserva su tamaño aunque se oculte contenido.
+        outer.setSizeConstraint(QLayout.SetFixedSize)
 
         panel = QWidget(self)
         panel.setObjectName("panel")
@@ -127,11 +130,14 @@ class Toolbar(QWidget):
         title.setObjectName("title")
         header.addWidget(title)
         header.addStretch(1)
-        collapse = QPushButton("–")
-        collapse.setFixedWidth(26)
-        collapse.setToolTip("Contraer / expandir la barra")
-        collapse.clicked.connect(self.toggle_collapsed)
-        header.addWidget(collapse)
+        minimize = QPushButton("–")
+        minimize.setFixedWidth(26)
+        minimize.setToolTip(
+            "Ocultar la barra (Ctrl+Alt+M).\n"
+            "Vuelve a mostrarla desde el icono de ScreenMarker en la bandeja del sistema."
+        )
+        minimize.clicked.connect(self.hide_requested.emit)
+        header.addWidget(minimize)
         close = QPushButton("✕")
         close.setObjectName("danger")
         close.setFixedWidth(26)
@@ -261,12 +267,6 @@ class Toolbar(QWidget):
             self.color_selected.emit(color)
 
     # ------------------------------------------------------------- estado
-    def toggle_collapsed(self) -> None:
-        self._collapsed = not self._collapsed
-        self.body.setVisible(not self._collapsed)
-        self.adjustSize()
-        self.resize(self.sizeHint())
-
     def sync(self, tool: Tool, color: QColor, passthrough: bool, board_mode: str) -> None:
         for index, (candidate, _, _) in enumerate(TOOL_ORDER):
             if candidate is tool:

@@ -20,7 +20,9 @@ Funciona en **Linux** y **Windows** con el mismo código (Python + PySide6/Qt).
 - **Pizarra** oscura o clara para tapar la pantalla y escribir sobre un fondo limpio.
 - **Captura** de la pantalla con las anotaciones incluidas (se guarda en PNG y se copia
   al portapapeles).
-- Barra flotante arrastrable y contraíble, y atajos globales de teclado.
+- Barra flotante arrastrable que se oculta en la **bandeja del sistema** (junto al reloj
+  de Windows), desde donde se vuelve a mostrar o se sale.
+- Atajos globales de teclado.
 
 ## Descargar el ejecutable (sin instalar Python)
 
@@ -96,7 +98,10 @@ Para tenerlo siempre a mano puedes crear un acceso directo a `run.bat` (Windows)
 ## Uso
 
 Al iniciar aparece la barra flotante arriba a la derecha (se puede arrastrar desde
-cualquier zona vacía y contraer con `–`). Elige una herramienta y dibuja sobre la
+cualquier zona vacía). El botón `–` la **oculta por completo**: la aplicación sigue
+activa y queda como icono de ScreenMarker en la bandeja del sistema; un clic en ese
+icono la vuelve a mostrar, y con el botón derecho hay un menú con pasar clics, pizarra,
+limpiar, captura y salir. Elige una herramienta y dibuja sobre la
 pantalla. Cuando necesites volver a usar la aplicación de abajo, pulsa
 **Ctrl+Alt+D** (o el botón *Pasar clics*): las anotaciones se quedan pegadas a la
 pantalla y el mouse deja de ser capturado. Pulsa otra vez para seguir dibujando.
@@ -117,6 +122,7 @@ pantalla y el mouse deja de ser capturado. Pulsa otra vez para seguir dibujando.
 | `Ctrl+Z` / `Ctrl+Y` | Deshacer / rehacer |
 | `Ctrl+Alt+C` | Limpiar todo |
 | `Ctrl+Alt+S` | Guardar captura con anotaciones |
+| `Ctrl+Alt+M` | Ocultar / mostrar la barra (queda en la bandeja) |
 | `Ctrl+Alt+Q` | Salir |
 
 Los atajos con `Ctrl+Alt` son **globales**: funcionan aunque estés escribiendo en otra
@@ -162,3 +168,4 @@ Estructura del paquete:
 | `screenmarker/model.py` | Anotaciones (geometría, dibujado, detección para borrar) |
 | `screenmarker/passthrough.py` | Click-through nativo en X11 y Win32 |
 | `screenmarker/hotkeys.py` | Atajos globales opcionales con `pynput` |
+| `screenmarker/tray.py` | Icono y menú en la bandeja del sistema |
