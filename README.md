@@ -4,7 +4,7 @@ ScreenMarker is free and open-source software that lets teachers draw, highlight
 
 ScreenMarker runs on **Linux** and **Windows** and is built with Python and Qt (PySide6).
 
-![ScreenMarker example](docs/'Captura de pantalla 2026-09-24 173815'.png)
+![ScreenMarker example](docs/pantallazo-screenmaker.png)
 
 ## Objective
 
