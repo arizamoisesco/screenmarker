@@ -1,171 +1,180 @@
 # ScreenMarker
 
-Marcador para **rayar la pantalla** sobre cualquier ventana, pensado para dar clases:
-subrayar, señalar elementos, dibujar figuras y resaltar lo que estás explicando sin
-importar qué aplicación tengas delante (navegador, terminal, PDF, Zoom, Meet…).
+ScreenMarker is free and open-source software that lets teachers draw, highlight, point, and write directly over any application on their screen. It is designed to support virtual and remote classes by making explanations clearer while the teacher shares a browser, presentation, PDF, terminal, video call, or any other window.
 
-Funciona en **Linux** y **Windows** con el mismo código (Python + PySide6/Qt).
+ScreenMarker runs on **Linux** and **Windows** and is built with Python and Qt (PySide6).
 
-![Ejemplo](docs/ejemplo.png)
+![ScreenMarker example](docs/ejemplo.png)
 
-## Qué incluye
+## Objective
 
-- Capa transparente a pantalla completa (multi-monitor) siempre encima del resto.
-- Herramientas: **lápiz, resaltador, línea, flecha, rectángulo, elipse, texto,
-  borrador y puntero láser** (rastro que se desvanece).
-- Paleta de 8 colores + color personalizado, grosor 1–24 y relleno opcional de figuras.
-- **Deshacer / rehacer / limpiar** todo.
-- **Modo "pasar clics"**: los dibujos siguen visibles pero el mouse vuelve a la
-  aplicación de abajo, para seguir trabajando sin cerrar la herramienta.
-- **Pizarra** oscura o clara para tapar la pantalla y escribir sobre un fondo limpio.
-- **Captura** de la pantalla con las anotaciones incluidas (se guarda en PNG y se copia
-  al portapapeles).
-- Barra flotante arrastrable que se oculta en la **bandeja del sistema** (junto al reloj
-  de Windows), desde donde se vuelve a mostrar o se sale.
-- Atajos globales de teclado.
+The objective of ScreenMarker is to provide virtual teachers with a simple, accessible, and free tool for explaining lessons during online classes. Teachers can mark important information, guide students' attention, draw diagrams, write notes, and switch back to the underlying application without interrupting the class.
 
-## Descargar el ejecutable (sin instalar Python)
+The project is free software so that educators, students, and communities can use, study, modify, and share it without depending on proprietary annotation software.
 
-En la página de [Releases](https://github.com/arizamoisesco/screenmarker/releases) hay
-descargas listas para usar:
+## Features
 
-- **Windows**: `screenmarker-windows-x64.zip` — descomprímelo (clic derecho →
-  *Extraer todo*) y abre `screenmarker.exe` desde la carpeta extraída. No ejecutes la
-  aplicación desde dentro del ZIP: Windows la abre en una carpeta temporal y Qt no
-  encuentra sus componentes.
-- **Linux**: `screenmarker-linux-x86_64` — dale permiso de ejecución y lánzalo:
+- Transparent, full-screen annotation overlay that stays above other windows.
+- Multi-monitor support.
+- Pencil, highlighter, line, arrow, rectangle, ellipse, text, eraser, and laser-pointer tools.
+- Eight preset colors, a custom color, adjustable stroke width, and optional shape fill.
+- Undo, redo, and clear-all actions.
+- Click-through mode: annotations remain visible while mouse clicks reach the application underneath.
+- Dark and light whiteboard modes for writing on a clean background.
+- Screen captures with annotations, saved as PNG and copied to the clipboard.
+- Movable floating toolbar with system-tray support.
+- Global keyboard shortcuts.
+
+## Requirements and tools to install
+
+To run ScreenMarker from source, install:
+
+- **Python 3.10 or newer**
+- **Git** (recommended for cloning the repository)
+- **Python virtual-environment support** (`venv`)
+- **PySide6** (installed from `requirements.txt`)
+- **pynput** (installed from `requirements.txt`)
+
+The application dependencies are:
+
+- `PySide6>=6.5,<7`
+- `pynput>=1.7,<2`
+
+For development and testing, install the additional tools from `requirements-dev.txt`:
+
+- `pytest>=8`
+- `ruff>=0.5`
+
+### Linux prerequisites
+
+On Linux, use an active desktop compositor for transparent overlays. The click-through mode uses X11's XShape extension. On Wayland, run ScreenMarker through XWayland:
+
+```bash
+QT_QPA_PLATFORM=xcb python -m screenmarker
+```
+
+### Windows prerequisites
+
+No additional system configuration is normally required. Click-through mode uses the native Win32 window style.
+
+## Installation from source
+
+### Linux
+
+```bash
+git clone https://github.com/arizamoisesco/screenmarker.git
+cd screenmarker
+python3 -m venv .venv
+source .venv/bin/activate
+python -m pip install --upgrade pip
+python -m pip install -r requirements.txt
+python -m screenmarker
+```
+
+Alternatively, run the included script. It creates the virtual environment and installs the dependencies the first time:
+
+```bash
+chmod +x run.sh
+./run.sh
+```
+
+### Windows
+
+```powershell
+git clone https://github.com/arizamoisesco/screenmarker.git
+cd screenmarker
+py -3 -m venv .venv
+.venv\Scripts\activate
+python -m pip install --upgrade pip
+python -m pip install -r requirements.txt
+python -m screenmarker
+```
+
+Alternatively, double-click `run.bat`. It creates the virtual environment and installs the dependencies automatically on first use.
+
+## Download a ready-to-run application
+
+Prebuilt downloads may be available on the [Releases page](https://github.com/arizamoisesco/screenmarker/releases):
+
+- **Windows:** download `screenmarker-windows-x64.zip`, extract it, and run `screenmarker.exe` from the extracted folder. Do not run it directly from inside the ZIP file.
+- **Linux:** download `screenmarker-linux-x86_64`, make it executable, and run it:
 
   ```bash
   chmod +x screenmarker-linux-x86_64
   ./screenmarker-linux-x86_64
   ```
 
-### Aviso de SmartScreen en Windows
+Windows may display a SmartScreen warning because the executable is not signed with a commercial code-signing certificate. The binaries are built from this repository by GitHub Actions, and users can build them independently with PyInstaller.
 
-El ejecutable no está firmado con un certificado de código (es de pago y se emite a
-nombre de una persona u organización), así que Windows muestra *"Windows protegió tu
-PC"* la primera vez. Para abrirlo: **Más información → Ejecutar de todas formas**.
+## Basic usage
 
-Si el antivirus lo bloquea o lo borra, añade la carpeta a las exclusiones de Windows
-Defender (*Seguridad de Windows → Protección antivirus → Exclusiones*). Los ejecutables
-se compilan en GitHub Actions a partir del código de este repositorio, así que puedes
-reconstruirlos tú mismo con PyInstaller si prefieres no confiar en el binario.
+When ScreenMarker starts, its floating toolbar appears in the upper-right corner. Select a tool and draw over the screen. Use **Pass clicks** when you want the annotations to remain visible while interacting with the application underneath.
 
-### Si el ejecutable no arranca
+To add text, select the **Text** tool, click on the screen, type the text, and press `Enter`. Press `Esc` to cancel.
 
-1. Descarga `screenmarker-windows-x64-debug.zip`, descomprímelo y ejecuta
-   `screenmarker-debug.exe`: es la misma aplicación pero con consola, y el error queda
-   escrito en pantalla.
-2. Cualquier fallo de arranque se guarda también en
-   `%LOCALAPPDATA%\ScreenMarker\screenmarker.log` (Linux:
-   `~/.local/state/screenmarker/screenmarker.log`).
+### Keyboard shortcuts
 
-Los ejecutables los compila GitHub Actions (`.github/workflows/release.yml`) con
-PyInstaller cada vez que se publica una etiqueta `vX.Y.Z`.
-
-## Instalación desde el código
-
-Requiere Python 3.10 o superior.
-
-### Linux
-
-```bash
-git clone https://github.com/<tu-usuario>/screenmarker.git
-cd screenmarker
-python3 -m venv .venv && source .venv/bin/activate
-pip install -r requirements.txt
-python -m screenmarker
-```
-
-También puedes usar el script `./run.sh`, que crea el entorno virtual la primera vez.
-
-### Windows
-
-```powershell
-git clone https://github.com/<tu-usuario>/screenmarker.git
-cd screenmarker
-py -m venv .venv
-.venv\Scripts\activate
-pip install -r requirements.txt
-py -m screenmarker
-```
-
-O simplemente haz doble clic en `run.bat`.
-
-Para tenerlo siempre a mano puedes crear un acceso directo a `run.bat` (Windows) o a
-`run.sh` (Linux) y asignarle un atajo de teclado del sistema.
-
-## Uso
-
-Al iniciar aparece la barra flotante arriba a la derecha (se puede arrastrar desde
-cualquier zona vacía). El botón `–` la **oculta por completo**: la aplicación sigue
-activa y queda como icono de ScreenMarker en la bandeja del sistema; un clic en ese
-icono la vuelve a mostrar, y con el botón derecho hay un menú con pasar clics, pizarra,
-limpiar, captura y salir. Elige una herramienta y dibuja sobre la
-pantalla. Cuando necesites volver a usar la aplicación de abajo, pulsa
-**Ctrl+Alt+D** (o el botón *Pasar clics*): las anotaciones se quedan pegadas a la
-pantalla y el mouse deja de ser capturado. Pulsa otra vez para seguir dibujando.
-
-### Atajos
-
-| Atajo | Acción |
+| Shortcut | Action |
 | --- | --- |
-| `Ctrl+Alt+D` | Alternar entre dibujar y pasar clics |
-| `Esc` | Pasar clics (salir del modo dibujo) |
-| `P` / `H` / `L` / `A` | Lápiz / Resaltador / Línea / Flecha |
-| `R` / `E` / `T` | Rectángulo / Elipse / Texto |
-| `X` / `G` | Borrador / Láser |
-| `1`–`8` | Colores de la paleta |
-| `[` / `]` | Menos / más grosor |
-| `F` | Relleno de figuras |
-| `B` o `Ctrl+Alt+B` | Pizarra (apagada → oscura → clara) |
-| `Ctrl+Z` / `Ctrl+Y` | Deshacer / rehacer |
-| `Ctrl+Alt+C` | Limpiar todo |
-| `Ctrl+Alt+S` | Guardar captura con anotaciones |
-| `Ctrl+Alt+M` | Ocultar / mostrar la barra (queda en la bandeja) |
-| `Ctrl+Alt+Q` | Salir |
+| `Ctrl+Alt+D` | Toggle drawing and click-through mode |
+| `Esc` | Enable click-through mode |
+| `P` / `H` / `L` / `A` | Pencil / highlighter / line / arrow |
+| `R` / `E` / `T` | Rectangle / ellipse / text |
+| `X` / `G` | Eraser / laser pointer |
+| `1`–`8` | Select a palette color |
+| `[` / `]` | Decrease / increase stroke width |
+| `F` | Toggle shape fill |
+| `B` or `Ctrl+Alt+B` | Cycle whiteboard mode |
+| `Ctrl+Z` / `Ctrl+Y` | Undo / redo |
+| `Ctrl+Alt+C` | Clear all annotations |
+| `Ctrl+Alt+S` | Save a screenshot with annotations |
+| `Ctrl+Alt+M` | Hide/show the toolbar |
+| `Ctrl+Alt+Q` | Quit |
 
-Los atajos con `Ctrl+Alt` son **globales**: funcionan aunque estés escribiendo en otra
-aplicación (requieren el paquete `pynput`, incluido en `requirements.txt`). El resto
-funciona cuando ScreenMarker tiene el foco, es decir, en modo dibujo.
+The `Ctrl+Alt` shortcuts are global and work while another application is active. The remaining shortcuts work when ScreenMarker has focus in drawing mode.
 
-Para escribir texto: elige la herramienta *Texto*, haz clic donde quieras escribir,
-escribe y pulsa `Enter` (`Esc` cancela).
-
-### Opciones de línea de comandos
+## Command-line options
 
 ```bash
 python -m screenmarker --color "#0a84ff" --width 6 --tool arrow --passthrough \
-    --screenshot-dir ~/Capturas
+    --screenshot-dir ~/Pictures/ScreenMarker
 ```
 
-## Notas por sistema
+Screenshots are saved by default in `~/Pictures/ScreenMarker` on Linux and in `%USERPROFILE%\Pictures\ScreenMarker` on Windows.
 
-- **Linux**: el modo "pasar clics" usa la extensión XShape de X11 y la transparencia
-  necesita un compositor activo (KDE, GNOME, XFCE con compositing, etc.). En sesiones
-  **Wayland** ejecuta la herramienta sobre XWayland:
-  `QT_QPA_PLATFORM=xcb python -m screenmarker`.
-- **Windows**: no necesita configuración extra; el modo "pasar clics" usa el estilo
-  `WS_EX_TRANSPARENT` de la API Win32.
-- Las capturas se guardan por defecto en `~/Pictures/ScreenMarker`
-  (`%USERPROFILE%\Pictures\ScreenMarker` en Windows).
+## Development
 
-## Desarrollo
+Install the development dependencies:
 
 ```bash
-pip install -r requirements-dev.txt
+python -m pip install -r requirements-dev.txt
+```
+
+Run the linter and tests:
+
+```bash
 ruff check .
 QT_QPA_PLATFORM=offscreen pytest
 ```
 
-Estructura del paquete:
+Main source files:
 
-| Archivo | Contenido |
+| File | Description |
 | --- | --- |
-| `screenmarker/app.py` | Arranque, atajos y conexión entre barra y lienzo |
-| `screenmarker/overlay.py` | Ventana transparente, eventos de mouse y capturas |
-| `screenmarker/toolbar.py` | Barra flotante de herramientas |
-| `screenmarker/model.py` | Anotaciones (geometría, dibujado, detección para borrar) |
-| `screenmarker/passthrough.py` | Click-through nativo en X11 y Win32 |
-| `screenmarker/hotkeys.py` | Atajos globales opcionales con `pynput` |
-| `screenmarker/tray.py` | Icono y menú en la bandeja del sistema |
+| `screenmarker/app.py` | Application startup, shortcuts, and component connections |
+| `screenmarker/overlay.py` | Transparent window, mouse events, and screenshots |
+| `screenmarker/toolbar.py` | Floating toolbar and controls |
+| `screenmarker/model.py` | Annotation data, geometry, and eraser detection |
+| `screenmarker/passthrough.py` | Native click-through support for X11 and Win32 |
+| `screenmarker/hotkeys.py` | Optional global shortcuts using `pynput` |
+| `screenmarker/tray.py` | System-tray icon and menu |
+
+## License
+
+ScreenMarker is licensed under the **GNU General Public License, version 2 (GPL-2.0)**.
+
+You may use, study, modify, and redistribute the software under the terms of that license. See the [GNU GPL v2.0](https://www.gnu.org/licenses/old-licenses/gpl-2.0.html) for the complete license text.
+
+## Contributing
+
+Contributions, bug reports, documentation improvements, and ideas for supporting teachers are welcome. Please open an issue or pull request on GitHub.
